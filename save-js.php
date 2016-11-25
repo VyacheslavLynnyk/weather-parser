@@ -9,6 +9,9 @@ if (!is_dir(__DIR__. DIRECTORY_SEPARATOR . 'js_tmp')) {
    mkdir( __DIR__. DIRECTORY_SEPARATOR . 'js_tmp');
 }
 
+//
+ini_set("display_errors", 1);
+
 $weatherRepository = new WeatherRepository();
 $date = date('Y-m-d'); 
 $weatherArray = $weatherRepository->load();

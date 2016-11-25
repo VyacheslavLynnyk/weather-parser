@@ -83,23 +83,30 @@ class Weather extends WeatherA
 				$cityName = mb_ucfirst($cityName);	
 
 				$icon_type = (string) trim($data['icon_type']);
-				if (in_array($icon_type, ['d000'])) {
+				if (in_array($icon_type, ['d000', 'n000'])) {
 					$icon_char = 's';
-				} elseif (in_array($icon_type, ['d300', 'd200', 'd100', 'n200'])) {
+				} elseif (in_array($icon_type, ['d300', 'd200', 'd100', 'n200', 'd311'])) {
 					$icon_char = 'sc';
-				} elseif (in_array($icon_type, ['d400', 'n600', 'n300', 'n400','n100'])) {
+				} elseif (in_array($icon_type, ['d400', 'n600', 'n300', 'n400','n100', 'd310'])) {
 					$icon_char = 'c';
-				} elseif (in_array($icon_type, ['d210', 'n410','d220'])) {
+				} elseif (in_array($icon_type, ['d210', 'n410','d220', 'd420', 'd410', 'd430'])) {
 					$icon_char = 'cr';
-				} elseif (in_array($icon_type, ['d400', 'n430'])) {
+				} elseif (in_array($icon_type, ['d400', 'n430', 'd330', 'd320'])) {
 					$icon_char = 'rf';
-				} elseif (in_array($icon_type, ['d312', 'd331', 'd432', 'n422', 'n412'])) {
-					$icon_char = 'cn';
+				} elseif (in_array($icon_type,
+					['d312', 'd331', 'd432',
+                        'n422', 'n412','d421',
+                        'd412', 'd322', 'd312',
+                        'd212', 'd422' , 'd411',
+                        'd222', 'd221', 'd321',
+                    ])) {
+					    $icon_char = 'cn';
 				} else {
 					$icon_char = 'xz';
 					echo '<p class="alert-danger danger">Неизвестный значек погоды в городе '
-						. $cityName .' за '.$data['date'].' </p><br>';
-					var_dump($icon_type);
+						. $cityName .' за '.$data['date'].' <br>'
+                        . $icon_type . ' - ' . $data['desc'] .
+						 '</p><br>';
 				//	exit;
 				}
 

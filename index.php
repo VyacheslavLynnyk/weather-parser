@@ -138,7 +138,6 @@
       });
 
       $( document ).ready(function(){
-          
 
           // Get weather on load            
           $.get('./action.php',
