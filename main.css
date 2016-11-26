@@ -77,4 +77,16 @@
       display: none !important;
   }
 
+  /*ICONS */
+  .replacer .select-image img {
+      height: 80px;
+      width: 120px;
+      border: 5px solid rgba(16, 16, 16, 0.5);
+      background: black;
+      margin-left: 10px;
+  }
+  .replacer .select-image img:hover {
+      border: 5px solid rgba(22, 43, 255, 0.34);
+      background: rgba(69, 80, 254, 0.95);
+  }
 

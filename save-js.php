@@ -10,14 +10,17 @@ if (!is_dir(__DIR__. DIRECTORY_SEPARATOR . 'js_tmp')) {
 }
 
 //
-ini_set("display_errors", 1);
+//ini_set("display_errors", 1);
 
-$weatherRepository = new WeatherRepository();
-$date = date('Y-m-d'); 
-$weatherArray = $weatherRepository->load();
-$days_cities = $weatherArray['weatherByDate'];
+$date = date('Y-m-d');
+$weather = WeatherRepository::load();
 
-if (!isset($weatherArray['date'])) {
+$weather->get();
+//$days_cities = $weatherArray['weatherByDate'];
+$days_cities = $weather->get();
+
+//if (!isset($weatherArray['date'])) {
+if ($weather->getUpdateDate() == null) {
     echo 'Нужно обновить данные';
     exit;
 }
