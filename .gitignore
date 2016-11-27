@@ -1,4 +1,8 @@
 # Created by .ignore support plugin (hsz.mobi)
 .gitignore
 .idea/
+js_files/*
+js_tmp/*
+parse_tmp/*
+
 

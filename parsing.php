@@ -44,11 +44,11 @@ class Weather extends WeatherA
 
     protected $days = [];
 
-    protected $updateDate;
+    protected $updateDate = null;
 
     protected $unknownIcons = [];
 
-    const SETTINGS_PATH = 'settings.txt';
+    const SETTINGS_PATH = 'settings.json';
 
     public function __construct(array $cities = [])
     {
@@ -157,15 +157,18 @@ class Weather extends WeatherA
     public function fixIcons()
     {
         foreach ($this->weatherCityDay as $keyName => $daysData) {
-            foreach ($daysData as $day) {
+            foreach ($daysData as $day => $dayData) {
+//                echo $day;
+//                echo "<pre>"; print_r($this->weather[$day][$keyName]); echo "</pre>"; //['icon_chars'] . '<br>';
+//                continue;
+
                 if (!is_numeric($day)) {
                     continue;
                 }
+
                 if ($this->weather[$day][$keyName]['icon_chars'] == 'xz'
                     || $this->weather[$day][$keyName]['icon_chars'] == 'xz2'
                 ) {
-                    echo $this->weather[$day][$keyName]['icon_type'];
-                    exit;
                     $newIconChar = $this->convertIcon(
                         $this->weather[$day][$keyName]['icon'],
                         $this->weather[$day][$keyName]['icon_type'],
@@ -240,7 +243,6 @@ class Weather extends WeatherA
         $weatherFull = $html->find('div[id=blockDays]', 0)->plaintext;
 
         //print_r($weatherFull);
-
         $weatherArr = explode('&nbsp', $weatherFull);
         unset($weatherArr[0]);
         unset($weatherArr[8]);
@@ -253,7 +255,6 @@ class Weather extends WeatherA
             $data = preg_match_all($pattern, $weather, $matches);
             // print_r($matches);
 
-
             $cityData[$key]['date'] = trim(rtrim($matches[1][0], '   мин.')) . date(' Y');
             $cityData[$key]['night_t'] = trim($matches[2][0]);
             $cityData[$key]['day_t'] = trim($matches[3][1]);
@@ -263,11 +264,11 @@ class Weather extends WeatherA
             if (!is_numeric($day)) {
                 continue;
             }
-            $cityData[$day]['icon'] = $html->find('.weatherIco', $day)->children(0)->getAttribute('src');
+            $cityData[$day]['icon'] = $html->find('.weatherIco', $day - 1)->children(0)->getAttribute('src');
 
-            $cityData[$day]['desc'] = ($html->find('.weatherIco', $day)->getAttribute('title'));
+            $cityData[$day]['desc'] = ($html->find('.weatherIco', $day - 1)->getAttribute('title'));
 
-            $type = $html->find('.weatherIco', $day)->getAttribute('class');
+            $type = $html->find('.weatherIco', $day - 1)->getAttribute('class');
             $cityData[$day]['icon_type'] = ltrim($type, 'weatherIco');
         }
 
@@ -286,17 +287,17 @@ class WeatherViewer
         <div class="replacer thumbnail alert-warning text-center ">
             <div class="row">
                 <h4>Выберите отображение для этой иконки</h4>
-                <div class="col-sm-3">
+                <div class="col-sm-3 col-md-5 col-lg-3">
                     <img src="<?= $data['icon']; ?>" alt="<?= $data['icon_type']; ?>">
                     <p><?= $data['desc'] ?></p>
                 </div>
-                <div class="col-sm-9 select-image" data-icon="<?= $data['icon_type']; ?>">
-                    <img class="thumbnail pull-left" src="<?= self::ICONS_PATH . 's.png' ?>" alt="s">
-                    <img class="thumbnail pull-left" src="<?= self::ICONS_PATH . 'sc.png' ?>" alt="c">
-                    <img class="thumbnail pull-left" src="<?= self::ICONS_PATH . 'c.png' ?>" alt="sc">
-                    <img class="thumbnail pull-left" src="<?= self::ICONS_PATH . 'cr.png' ?>" alt="cr">
-                    <img class="thumbnail pull-left" src="<?= self::ICONS_PATH . 'rf.png' ?>" alt="rf">
-                    <img class="thumbnail pull-left" src="<?= self::ICONS_PATH . 'cn.png' ?>" alt="cn">
+                <div class="col-sm-9 col-md-7 col-lg-9 select-image" data-icon="<?= $data['icon_type']; ?>">
+                    <img class="thumbnail pull-right" src="<?= self::ICONS_PATH . 'cn.png' ?>" alt="cn">
+                    <img class="thumbnail pull-right" src="<?= self::ICONS_PATH . 'rf.png' ?>" alt="rf">
+                    <img class="thumbnail pull-right" src="<?= self::ICONS_PATH . 'cr.png' ?>" alt="cr">
+                    <img class="thumbnail pull-right" src="<?= self::ICONS_PATH . 'c.png' ?>" alt="sc">
+                    <img class="thumbnail pull-right" src="<?= self::ICONS_PATH . 'sc.png' ?>" alt="c">
+                    <img class="thumbnail pull-right" src="<?= self::ICONS_PATH . 's.png' ?>" alt="s">
                 </div>
             </div>
         </div>

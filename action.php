@@ -1,21 +1,11 @@
 <?php
 require_once __DIR__ . '/parsing.php';
 
-//function getWeatherArray()
-//{
-//	$weatherRepository = new WeatherRepository();
-//	return $weatherRepository->load();
-//}
-
 function printWeather(){
-//	$dataArr = getWeatherArray();
-    $weatherRepository = new WeatherRepository();
-    $weather = $weatherRepository->load();
+    $weather = WeatherRepository::load();
 
-	//echo '<pre>';print_r($dataArr);echo '</pre>';
-	
 	// IF HAVE NO CACHE
-	if (isset($weather) && $weather->getUpdateDate() == null) {
+	if (!is_object($weather) || $weather->getUpdateDate() == null ) {
 		echo '<h2 class="text-center">Нужно обновить данные</h2>';
 		exit;
 	}
@@ -25,7 +15,7 @@ function printWeather(){
 		foreach ($unknowIcons as $icon => $data) {
 			WeatherViewer::printReplacer($data);
 		}
-        exit;
+        //exit;
 	}
     $weather->fixIcons();
 
@@ -70,10 +60,12 @@ function printWeather(){
 	</table>
 	<?php
 	echo "</pre>";
-
 }
 
 
+// *************************************************
+// ================ REQUESTS =======================
+// *************************************************
 
 // Update and write changes to cache
 if (isset($_POST['action']) && $_POST['action'] == 'update') {
@@ -119,9 +111,9 @@ if (isset($_POST['action']) && $_POST['action'] == 'update') {
 
 	$weather = new Weather($cities);
 	$weather->get($days); 
-	$weatherRepository = new WeatherRepository();
 
 	// Save weather to cache
+    $weatherRepository = new WeatherRepository();
 	if ($weatherRepository->save($weather) !== true) : ?>
 		<h3 class="alert-danger danger">
 			Ошибка при сохранении временных файлов cache 
@@ -131,14 +123,16 @@ if (isset($_POST['action']) && $_POST['action'] == 'update') {
 
 	printWeather();
 }
+
 // Load from cache
 if (isset($_GET['action']) && $_GET['action'] == 'load') {
 	printWeather();
 }
+
+// Save options (Last update and days view)
 if (isset($_GET['action']) && $_GET['action'] == 'last_days') {
     $weatherRepository = new WeatherRepository();
     $weather = $weatherRepository->load();
-//	$weatherArray = getWeatherArray();
 	if (!is_object($weather)) {
 		echo json_encode([
 			'last_day' => 3,
@@ -146,13 +140,12 @@ if (isset($_GET['action']) && $_GET['action'] == 'last_days') {
 		]);			
 	} else {
 		echo json_encode([
-//			'last_day' => count($weatherArray['days']),
 			'last_day' => count($weather->getDays()),
-//		 	'update_date' => $weatherArray['date']
 		 	'update_date' => $weather->getUpdateDate()
 		]);
 	}
 }
+
 // Save new Icon assignation
 if (isset($_POST['action']) && $_POST['action'] == 'save_icon') {
 	$icon_type = trim(strip_tags($_POST['iconType']));

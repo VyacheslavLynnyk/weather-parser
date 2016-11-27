@@ -207,17 +207,21 @@ foreach ($days_cities as $day => $cities) {
     $js_path = genPathByDay($day);
     $links[$day] = $js_path;
     // $zip->addFromString('file_name_within_archive.ext', $your_string_data);
+    file_put_contents($js_path, genJS($cities));
     $zip->addFile(
         $js_path, 
         str_replace('.' . DIRECTORY_SEPARATOR .'js_files'. DIRECTORY_SEPARATOR , '', $js_path));
-    file_put_contents($js_path, genJS($cities));    
+
 }
 $zip->close();
+
+//sleep(1);
+
 header('Content-Type: application/zip');
 header('Content-Length: ' . filesize($file));
 header('Content-Disposition: attachment; filename="Weather_'.$date.'_jsx.zip"');
 readfile($file);
-unlink($file); 
+unlink($file);
 
 
 // Prepare File
@@ -232,9 +236,3 @@ unlink($file);
 
 
 // echo $content;
-
-// foreach ($links as $key => $link) {
-//     // file_force_download($link);
-//     echo '<a href="'.$link.'"> days '.$key.'</a><br>';
-// }
-

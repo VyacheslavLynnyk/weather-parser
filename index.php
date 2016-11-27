@@ -42,7 +42,7 @@
             <a class="navbar-brand" href="#">Погода</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-            <div class="nav navbar-nav">
+            <div class="nav navbar-nav margin-left5px">
                 <label for="weather-days">за количество дней:</label>
                 <select class="nav" name="days" id="weather-days" style="margin-top: 15px; margin-right: 15px">
                     <option value="1">1</option>
@@ -65,11 +65,7 @@
             <ul class="nav navbar-nav navbar-right">
 
                 <!-- <li><a href="#" id="download-txt">Скачать TXT<span class="sr-only">(current)</span></a></li> -->
-                <li><a href="./save-js.php" id="download-js">
-                        Скачать JS
-                        <sup>Ошибок: 0</sup>
-                    </a>
-                </li>
+                <li><a href="./save-js.php" id="download-js">Скачать JS</a></li>
             </ul>
         </div><!--/.nav-collapse -->
     </div>
