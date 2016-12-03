@@ -2,17 +2,16 @@
 
 require_once __DIR__ . '/parsing.php';
 
-if (!is_dir(__DIR__. DIRECTORY_SEPARATOR . 'js_files')) {
-   mkdir( __DIR__. DIRECTORY_SEPARATOR . 'js_files');
+if (!is_dir(__DIR__ . DIRECTORY_SEPARATOR . 'js_files')) {
+    mkdir(__DIR__ . DIRECTORY_SEPARATOR . 'js_files');
 }
-if (!is_dir(__DIR__. DIRECTORY_SEPARATOR . 'js_tmp')) {
-   mkdir( __DIR__. DIRECTORY_SEPARATOR . 'js_tmp');
+if (!is_dir(__DIR__ . DIRECTORY_SEPARATOR . 'js_tmp')) {
+    mkdir(__DIR__ . DIRECTORY_SEPARATOR . 'js_tmp');
 }
 
 //
 //ini_set("display_errors", 1);
 
-$date = date('Y-m-d');
 $weather = WeatherRepository::load();
 
 $weather->get();
@@ -25,20 +24,20 @@ if ($weather->getUpdateDate() == null) {
     exit;
 }
 
-// Get current date
 
-function genPathByDay($n) {
+function genPathByDay($n)
+{
     --$n;
-    $date = date('Y-m-d');
-    $date1 = str_replace('-', '/', $date);
-    $newDate = date('Y-m-d',strtotime($date1 . "+".$n." days"));
-    $jsFile = '.'. DIRECTORY_SEPARATOR . 'js_files'. DIRECTORY_SEPARATOR .'Weather_'.$newDate.'.jsx';
+    $newDate = date('Y-m-d', strtotime(date('Y-m-d') . "+" . $n . " days"));
+    $jsFile = '.' . DIRECTORY_SEPARATOR . 'js_files' . DIRECTORY_SEPARATOR . 'Weather_' . $newDate . '.jsx';
     return $jsFile;
 }
 
-function genJS($cities){
-$currentData = date('Y-m-d H:i');
-$script = <<<"INFO"
+// Generate AfterEffect script file
+function genJS($cities)
+{
+    $currentData = date('Y-m-d H:i');
+    $script = <<<"INFO"
 // ---- INFO ----- DATE-UPDATE: {$currentData};
 var oblasti = {
     centr : {
@@ -83,7 +82,7 @@ var oblasti = {
 // --------------------------
 INFO;
 
-$script .= <<<LOGIC
+    $script .= <<<LOGIC
 
 function resetIcon(ico_num) {
     var layer_length = app.project.item(ico_num).layers.length;
@@ -191,11 +190,10 @@ for (var oblast_name in oblasti) {
 
 LOGIC;
 
-return $script;
+    return $script;
 }
 
-
-
+// Make temporary zip archive
 $file = tempnam("js_tmp", "zip");
 $zip = new ZipArchive();
 $zip->open($file, ZipArchive::OVERWRITE);
@@ -203,23 +201,24 @@ $zip->open($file, ZipArchive::OVERWRITE);
 
 // day == 1 is a current day
 
-foreach ($days_cities as $day => $cities) {    
+// Put files with AE scripts into archive
+foreach ($days_cities as $day => $cities) {
     $js_path = genPathByDay($day);
     $links[$day] = $js_path;
     // $zip->addFromString('file_name_within_archive.ext', $your_string_data);
     file_put_contents($js_path, genJS($cities));
     $zip->addFile(
-        $js_path, 
-        str_replace('.' . DIRECTORY_SEPARATOR .'js_files'. DIRECTORY_SEPARATOR , '', $js_path));
+        $js_path,
+        str_replace('.' . DIRECTORY_SEPARATOR . 'js_files' . DIRECTORY_SEPARATOR, '', $js_path)
+    );
 
 }
 $zip->close();
 
-//sleep(1);
-
+// Download archive
 header('Content-Type: application/zip');
 header('Content-Length: ' . filesize($file));
-header('Content-Disposition: attachment; filename="Weather_'.$date.'_jsx.zip"');
+header('Content-Disposition: attachment; filename="Weather_' . date('Y-m-d') . '_jsx.zip"');
 readfile($file);
 unlink($file);
 
@@ -231,8 +230,6 @@ unlink($file);
 
 
 // Close and send to users
-
-
 
 
 // echo $content;

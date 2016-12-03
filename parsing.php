@@ -126,10 +126,6 @@ class Weather extends WeatherA
                 $icon_char = $this->convertIcon($data['icon'], $data['icon_type'], $data['desc']);
 
                 if ($icon_char == null) {
-                    // print_r((string) trim($data['icon_type']));
-                    // echo '<br>';
-                    // var_dump($$icon_type);
-                    // exit;
                     $icon_char = 'xz2';
                 }
 
@@ -158,10 +154,6 @@ class Weather extends WeatherA
     {
         foreach ($this->weatherCityDay as $keyName => $daysData) {
             foreach ($daysData as $day => $dayData) {
-//                echo $day;
-//                echo "<pre>"; print_r($this->weather[$day][$keyName]); echo "</pre>"; //['icon_chars'] . '<br>';
-//                continue;
-
                 if (!is_numeric($day)) {
                     continue;
                 }
@@ -188,7 +180,6 @@ class Weather extends WeatherA
 
     public function convertIcon($icon, $icon_type, $desc)
     {
-//        $data['icon'], $data['icon_type'], $data['desc']
         $icon_type = (string)trim($icon_type);
         $weatherIcons = json_decode(file_get_contents(self::SETTINGS_PATH), 1);
 
@@ -304,12 +295,65 @@ class WeatherViewer
         <?php
     }
 
-    public function printWeather($day)
+    public static function printWeather(WeatherA $weather)
     {
-//        echo '<img src="' . $img . '">';
-//        echo $desc;
-//        echo $type;
+        
+        // IF HAVE NO CACHE
+        if (!is_object($weather) || $weather->getUpdateDate() == null ) {
+            echo '<h2 class="text-center">Нужно обновить данные</h2>';
+            exit;
+        }
+        // Check for undefined icons
+        $unknowIcons = $weather->getUnknownIcons();
+        if (isset($unknowIcons) && is_array($unknowIcons) && sizeof($unknowIcons) > 0) {
+            foreach ($unknowIcons as $icon => $data) {
+                WeatherViewer::printReplacer($data);
+            }
+            //exit;
+        }
+        $weather->fixIcons();
 
+        ?>
+        <div id="header-top">
+            <div class="container">
+                <table  class="table table-strip small-table">
+                    <tr>
+                        <th>Город</th>
+                        <?php $days = $weather->getDays(); ?>
+                        <?php foreach ($days as $num => $day) : ?>
+                            <th><?= $day ?></th>
+                        <?php endforeach; ?>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <table class="table table-strip small-table">
+            <tr>
+                <th>Город</th>
+                <?php foreach ($days as $num => $day) : ?>
+                    <th><?= $day ?></th>
+                <?php endforeach; ?>
+            </tr>
+
+            <?php $weatherByCities = $weather->getCityDay(); ?>
+            <?php foreach ($weatherByCities as $cityKey => $cityDays) : ?>
+                <tr>
+                    <?php foreach ($cityDays as $dayNum => $city) : ?>
+                        <?php if ((int) $dayNum == 1) : ?>
+                            <td><?= $city['name'] ?></td>
+                        <?php endif; ?>
+                        <td class="text-center">
+                            <img src="<?= $city['icon']; ?>" alt="">
+                            <p><?= $city['night_t'].'...'.$city['day_t'] ?></p>
+                            <p><?= $city['desc']; ?></p>
+                        </td>
+                    <?php endforeach; ?>
+                </tr>
+            <?php endforeach; ?>
+
+        </table>
+        <?php
+        echo "</pre>";
     }
 
     public function showOrder($order)

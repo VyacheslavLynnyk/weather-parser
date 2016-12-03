@@ -1,67 +1,6 @@
 <?php
 require_once __DIR__ . '/parsing.php';
 
-function printWeather(){
-    $weather = WeatherRepository::load();
-
-	// IF HAVE NO CACHE
-	if (!is_object($weather) || $weather->getUpdateDate() == null ) {
-		echo '<h2 class="text-center">Нужно обновить данные</h2>';
-		exit;
-	}
-    // Check for undefined icons
-    $unknowIcons = $weather->getUnknownIcons();
-	if (isset($unknowIcons) && is_array($unknowIcons) && sizeof($unknowIcons) > 0) {
-		foreach ($unknowIcons as $icon => $data) {
-			WeatherViewer::printReplacer($data);
-		}
-        //exit;
-	}
-    $weather->fixIcons();
-
-   ?>
-	<div id="header-top">
-		<div class="container">
-			<table  class="table table-strip small-table">
-				<tr>
-					<th>Город</th>
-                    <?php $days = $weather->getDays(); ?>
-					<?php foreach ($days as $num => $day) : ?>
-						<th><?= $day ?></th>	
-					<?php endforeach; ?>				
-				</tr>
-			</table>
-		</div>
-	</div>
-	<table class="table table-strip small-table">
-	<tr>
-		<th>Город</th>
-		<?php foreach ($days as $num => $day) : ?>
-			<th><?= $day ?></th>	
-		<?php endforeach; ?>				
-	</tr>
-
-    <?php $weatherByCities = $weather->getCityDay(); ?>
-	<?php foreach ($weatherByCities as $cityKey => $cityDays) : ?>
-		<tr>
-			<?php foreach ($cityDays as $dayNum => $city) : ?>
-				<?php if ((int) $dayNum == 1) : ?>
-					<td><?= $city['name'] ?></td>
-				<?php endif; ?>		
-				<td class="text-center">
-					<img src="<?= $city['icon']; ?>" alt="">
-					<p><?= $city['night_t'].'...'.$city['day_t'] ?></p>				
-					<p><?= $city['desc']; ?></p>
-				</td>
-			<?php endforeach; ?>
-		</tr>
-	<?php endforeach; ?>
-	
-	</table>
-	<?php
-	echo "</pre>";
-}
-
 
 // *************************************************
 // ================ REQUESTS =======================
@@ -121,12 +60,13 @@ if (isset($_POST['action']) && $_POST['action'] == 'update') {
 		</h3>'
 	<?php endif;
 
-	printWeather();
+	WeatherViewer::printWeather($weather);
 }
 
 // Load from cache
 if (isset($_GET['action']) && $_GET['action'] == 'load') {
-	printWeather();
+	$weather = WeatherRepository::load();
+	WeatherViewer::printWeather($weather);
 }
 
 // Save options (Last update and days view)
