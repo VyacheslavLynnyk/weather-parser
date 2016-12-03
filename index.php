@@ -14,18 +14,18 @@
 
     <!-- Bootstrap -->
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./styles/bootstrap.min.css">
 
     <!-- Optional theme -->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="./styles/bootstrap-theme.min.css">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <script src="./styles/html5shiv.min.js"></script>
+    <script src="./styles/respond.min.js"></script>
     <![endif]-->
-    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="./styles/main.css">
 </head>
 <body>
 <!-- Static navbar -->
@@ -39,12 +39,12 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Погода</a>
+            <a class="navbar-brand" href="#"><div class="weather-logo"></div></a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-            <div class="nav navbar-nav margin-left5px">
-                <label for="weather-days">за количество дней:</label>
-                <select class="nav" name="days" id="weather-days" style="margin-top: 15px; margin-right: 15px">
+            <div class="nav navbar-nav margin-left5px padding-top15">
+                <label class="pull-left" for="weather-days">за количество дней:</label>
+                <select class="nav form-control pull-left" name="days" id="weather-days">
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
@@ -57,7 +57,9 @@
             </div>
             <ul class="nav navbar-nav">
                 <!-- <li class="active"><a href="./index.php">Home</a></li>     -->
-                <li class="active"><a href="#" id="weather-update">Обновить</a></li>
+                <li><a href="#" id="weather-update">
+                        <div class="update-time"><img src="imgs/update-tIme64x64-arrows.png" alt=""></div></a>
+                </li>
             </ul>
             <div class="nav navbar-nav text-center" style="padding-left: 20px; padding-top: 15px">
                 <span>Последнее обновление: <strong id="last-update"></strong></span>
@@ -80,125 +82,9 @@
 </div>
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="./scripts/jquery-1.12.4.min.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-<script>
-
-    var weather_result = $('.weather-result');
-    var loading = $('.loading');
-    var days = $('#weather-days');
-    var date_update = $('#last-update');
-
-    // $('#loading-image').bind('ajaxStart', function(){
-    //     $(this).show();
-    // }).bind('ajaxStop', function(){
-    //     $(this).hide();
-    // });
-
-    function loadWeather() {
-        // Get weather on load
-        $.get('./action.php',
-            {'action': 'load'},
-            function (response) {
-                weather_result.html(response);
-            }
-        );
-    }
-
-    function updateOptions() {
-        $.get(
-            './action.php',
-            {'action': 'last_days'},
-            function (response) {
-                console.log(response);
-                var data = JSON.parse(response);
-                console.log(data);
-                days.val(data.last_day);
-                date_update.html(data.update_date);
-
-            }
-        );
-    }
-
-    $('#weather-update').on('click', function (e) {
-        e.preventDefault();
-
-        // Get current date
-        var now = new Date();
-        var nowDate = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + (now.getDate());
-        if (date_update.text().slice(0, 10) === nowDate) {
-            if (confirm('Вы действительно хотите обновить данные? (Возможно дизайнер уже скачал скрипты со старыми данными)')) {
-
-            } else {
-                return
-            }
-        }
-
-        weather_result.hide();
-        loading.fadeIn(500);
-
-        $.post('./action.php',
-            {'action': 'update', 'days': days.val()},
-            function (response) {
-                loading.hide();
-                weather_result.html(response);
-                weather_result.fadeIn(500);
-                setTimeout(updateOptions, 2000);
-            }
-        );
-    });
-
-
-    // Icon FIXER
-    $('body').on('click', '.replacer .select-image > img', function (e) {
-        e.preventDefault();
-        var iconReplace = $( this ).attr('alt');
-        var iconType = $( this ).parent().data('icon');
-        $.post('./action.php',
-            {'action': 'save_icon', 'iconType' : iconType, 'iconReplace' : iconReplace },
-            function (response) {
-                console.log(response);
-                if (response == 'saved') {
-                    loadWeather();
-                } else {
-                    weather_result.html('Ошибка при сохранении');
-                }
-
-            }
-        );
-    });
-
-
-    $(document).ready(function () {
-        // LOAD WEATHER
-        loadWeather();
-
-        // Get last number of days on load
-        updateOptions();
-
-        // SHOW/HIDE TABLE HEAD ON SCROLL UP/DOWN
-        var showHead = 0;
-        $(window).scroll(function () {
-            var table_header = $('#header-top');
-
-            if (window.scrollY > 111) {
-                showHead++;
-            } else {
-                showHead = 0;
-            }
-            if (showHead == 1) {
-                table_header.fadeIn(500);
-            }
-            if (showHead == 0) {
-                table_header.fadeOut(500);
-            }
-
-        });
-
-
-    });
-
-</script>
+<script src="./scripts/bootstrap.min.js"></script>
+<script src="./scripts/main.js"></script>
 </body>
 </html>

@@ -16,15 +16,16 @@ if (isset($_POST['pass']) && sha1($_POST['pass']) == '1f1335fb0a6f530f9104532f65
 <head>
 	<meta charset="UTF-8">
 	<title>Auth</title>
+	<link rel="stylesheet" href="main.css">
 </head>
 <body>
 
-	<div style="width: 320px; margin: 200px auto; text-align: center">
+	<div style="width: 320px; margin: calc(50vh - 80px) auto; text-align: center">
 		<form action="<?= $_SERVER['PHP_SELF']; ?>" method="POST">
 
 			<h1 style="color: #999;font-family: Arial,sans-serif;">Enter the password:</h1>
 	
-			<input type="password" name='pass' required="required">		
+			<input type="password" name='pass' required="required" autofocus>
 			<button type="submit">Enter</button>					
 		</form>
 	</div>

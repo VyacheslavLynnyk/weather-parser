@@ -31,6 +31,10 @@ Abstract class WeatherA
     public function getUpdateDate()
     {
     }
+
+    public function fixIcons()
+    {
+    }
 }
 
 class Weather extends WeatherA
@@ -225,8 +229,6 @@ class Weather extends WeatherA
     {
         $cityData['name'] = mb_strtolower($city, 'UTF-8');
 
-        //print_r($cityData['name']);
-
         $html = file_get_html('https://sinoptik.ua/погода-' . $cityData['name']);
 
         // print_r($html);
@@ -295,11 +297,10 @@ class WeatherViewer
         <?php
     }
 
-    public static function printWeather($weather = null)
+    public static function printWeather(WeatherA $weather = null)
     {
-
         // IF HAVE NO CACHE
-        if (!is_object($weather) || $weather->getUpdateDate() == null ) {
+        if (!is_object($weather) || $weather->getUpdateDate() == null) {
             echo '<h2 class="text-center">Нужно обновить данные</h2>';
             exit;
         }
@@ -316,7 +317,7 @@ class WeatherViewer
         ?>
         <div id="header-top">
             <div class="container">
-                <table  class="table table-strip small-table">
+                <table class="table table-strip small-table">
                     <tr>
                         <th>Город</th>
                         <?php $days = $weather->getDays(); ?>
@@ -339,12 +340,12 @@ class WeatherViewer
             <?php foreach ($weatherByCities as $cityKey => $cityDays) : ?>
                 <tr>
                     <?php foreach ($cityDays as $dayNum => $city) : ?>
-                        <?php if ((int) $dayNum == 1) : ?>
+                        <?php if ((int)$dayNum == 1) : ?>
                             <td><?= $city['name'] ?></td>
                         <?php endif; ?>
                         <td class="text-center">
                             <img src="<?= $city['icon']; ?>" alt="">
-                            <p><?= $city['night_t'].'...'.$city['day_t'] ?></p>
+                            <p><?= $city['night_t'] . '...' . $city['day_t'] ?></p>
                             <p><?= $city['desc']; ?></p>
                         </td>
                     <?php endforeach; ?>
@@ -356,15 +357,10 @@ class WeatherViewer
         echo "</pre>";
     }
 
-    public function showOrder($order)
-    {
-
-    }
 }
 
 class WeatherRepository
 {
-
     const DATA_SAVE_PATH = 'parse_tmp';
 
     public function __construct($date = null)
@@ -400,18 +396,17 @@ class WeatherRepository
         }
         $weather->setCityDay($data['weatherByCity']);
         return $weather;
-
     }
 
     public function save(WeatherA $weather, $dateBool = null)
     {
-        if (!$weather->getUpdateDate()) {
-            throw new Exception("Update date isn't set", 1);
-
-        }
         $updateDateTime = $weather->getUpdateDate();
+        if (!isset($updateDateTime)) {
+            throw new Exception("Update date isn't set", 1);
+        }
         $updateDate = substr($updateDateTime, 0, 10);
 
+        $data = [];
         $data['date'] = $updateDateTime;
         $data['weatherByDate'] = $weather->get();
         $data['weatherByCity'] = $weather->getCityDay();
@@ -430,14 +425,10 @@ class WeatherRepository
             if ($this->rewritePrompt() == false) {
                 return false;
             }
-            //var_dump('rewrited');
+            //var_dump('rewritten');
         }
-
-        //var_dump($savePath);
-        file_put_contents(
-            $savePath,
-            $dataEncoded
-        );
+        // Save cache
+        file_put_contents($savePath, $dataEncoded);
 
         return (is_file($savePath)) ? true : false;
     }
