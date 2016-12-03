@@ -295,9 +295,9 @@ class WeatherViewer
         <?php
     }
 
-    public static function printWeather(WeatherA $weather)
+    public static function printWeather($weather = null)
     {
-        
+
         // IF HAVE NO CACHE
         if (!is_object($weather) || $weather->getUpdateDate() == null ) {
             echo '<h2 class="text-center">Нужно обновить данные</h2>';

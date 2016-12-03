@@ -10,7 +10,7 @@ if (!is_dir(__DIR__ . DIRECTORY_SEPARATOR . 'js_tmp')) {
 }
 
 //
-//ini_set("display_errors", 1);
+ini_set("display_errors", 1);
 
 $weather = WeatherRepository::load();
 
