@@ -1,4 +1,6 @@
-<?php if (!isset($_COOKIE["password"]) or sha1($_COOKIE["password"]) !== '453407e93d72014d648ec95503217423ca7d13b0') {
+<?php session_start();
+
+if (!isset($_COOKIE["password"]) or sha1($_COOKIE["password"]) !== '453407e93d72014d648ec95503217423ca7d13b0') {
     header('LOCATION: /auth.php');
     exit;
 }
@@ -39,11 +41,23 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#"><div class="weather-logo"></div></a>
+            <a class="navbar-brand" href="#">
+                <div class="weather-logo"></div>
+            </a>
+
+            <span>
+                <label style="margin-top: 15px" class="pull-left" for="weather-place">Режим:</label>
+                <select class="nav form-control pull-left" name="in" id="weather-place"
+                        style="width: 100px; height: 24px; padding: 0 2px;
+                            margin-left: 5px; margin-right: 15px; margin-top: 15px">
+                    <option value="ukraine" <?= (isset($_COOKIE['load_in']) && $_COOKIE['load_in'] =='ukraine') ? ' selected' : ''?>>Украина</option>
+                    <option value="world" <?= (isset($_COOKIE['load_in']) && $_COOKIE['load_in'] =='world') ? ' selected' : ''?>>Мир</option>
+                </select>
+            </span>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <div class="nav navbar-nav margin-left5px padding-top15">
-                <label class="pull-left" for="weather-days">за количество дней:</label>
+                <label class="pull-left" for="weather-days">Дней:</label>
                 <select class="nav form-control pull-left" name="days" id="weather-days">
                     <option value="1">1</option>
                     <option value="2">2</option>
@@ -58,11 +72,12 @@
             <ul class="nav navbar-nav">
                 <!-- <li class="active"><a href="./index.php">Home</a></li>     -->
                 <li><a href="#" id="weather-update">
-                        <div class="update-time"><img src="imgs/update-tIme64x64-arrows.png" alt=""></div></a>
+                        <div class="update-time"><img src="imgs/update-tIme64x64-arrows.png" alt=""></div>
+                    </a>
                 </li>
             </ul>
             <div class="nav navbar-nav text-center" style="padding-left: 20px; padding-top: 15px">
-                <span>Последнее обновление: <strong id="last-update"></strong></span>
+                <span><strong id="last-update"></strong><br><sup>Последнее обновление</sup></span>
             </div>
             <ul class="nav navbar-nav navbar-right">
 

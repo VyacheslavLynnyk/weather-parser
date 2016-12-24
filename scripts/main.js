@@ -1,11 +1,13 @@
 /**
  * Created by litter on 03.12.16.
  */
+$(document).ready(function () {
 
 var weather_result = $('.weather-result');
 var loading = $('.loading');
 var days = $('#weather-days');
 var date_update = $('#last-update');
+var place = $('#weather-place');
 
 // $('#loading-image').bind('ajaxStart', function(){
 //     $(this).show();
@@ -15,18 +17,20 @@ var date_update = $('#last-update');
 
 function loadWeather() {
     // Get weather on load
-    $.get('./action.php',
-        {'action': 'load'},
+    weather_result.hide();
+    $.get('/action.php',
+        {'action': 'load', 'in' : place.val()},
         function (response) {
             weather_result.html(response);
+            weather_result.fadeIn(500); 
         }
     );
 }
 
 function updateOptions() {
     $.get(
-        './action.php',
-        {'action': 'last_days'},
+        '/action.php',
+        {'action': 'last_days', 'in' : place.val()},
         function (response) {
             console.log(response);
             var data = JSON.parse(response);
@@ -55,8 +59,8 @@ $('#weather-update').on('click', function (e) {
     weather_result.hide();
     loading.fadeIn(500);
 
-    $.post('./action.php',
-        {'action': 'update', 'days': days.val()},
+    $.post('/action.php',
+        {'action': 'update', 'days': days.val(), 'in' : place.val()},
         function (response) {
             loading.hide();
             weather_result.html(response);
@@ -72,8 +76,13 @@ $('body').on('click', '.replacer .select-image > img', function (e) {
     e.preventDefault();
     var iconReplace = $( this ).attr('alt');
     var iconType = $( this ).parent().data('icon');
-    $.post('./action.php',
-        {'action': 'save_icon', 'iconType' : iconType, 'iconReplace' : iconReplace },
+    $.post('/action.php',
+        {
+            'action': 'save_icon',
+            'iconType' : iconType,
+            'iconReplace' : iconReplace,
+            'in' : place.val()
+        },
         function (response) {
             console.log(response);
             if (response == 'saved') {
@@ -87,7 +96,14 @@ $('body').on('click', '.replacer .select-image > img', function (e) {
 });
 
 
-$(document).ready(function () {
+// Document ready was here
+
+    place.on('change', function(){
+        updateOptions();
+        loadWeather();
+    });
+
+
     // LOAD WEATHER
     loadWeather();
 

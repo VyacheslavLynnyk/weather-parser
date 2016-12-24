@@ -185,3 +185,74 @@ table {
 body .navbar-default {
     background-image: linear-gradient(to bottom,#fff 0,#a0c0e6 100%);
 }
+
+
+
+/*** table cell style ***/
+
+.table .weath-cell {
+    min-width: 117px;
+    height: 220px;
+    text-align: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.weath-cell > div {
+    clear: both;
+}
+
+.weath-cell img {
+    float: left;
+    margin: 2px 5px;
+    border-radius: 50%;
+    padding: 2px;
+}
+
+.weath-day img {
+    border: 2px dotted rgba(100, 100, 100, 0.2);
+}
+
+.weath-night img {
+    border: 2px dotted rgba(74, 0, 166, 0.9);
+}
+
+.weath-day p,
+.weath-night p {
+    padding: 2px;
+    font: 14px Arial, sans-serif;
+    line-height: 1;
+}
+
+.block-temp {
+    float: left;
+    margin: 5px 5px 5px 0;
+    width: 45px;
+    height: 30px;
+    font: 0.9em Arial, sans-serif;
+    font-weight: bolder;
+    line-height: 30px;
+    text-align: center;
+    box-shadow: 1px 3px 5px grey;
+}
+
+.weath-day, .weath-night {
+    height: 50%;
+}
+
+.weath-night {
+    background-color: rgba(99, 99, 99, 0.5);
+}
+
+.weath-day .block-temp {
+    color: #333;
+    background: rgba(30, 80, 120, 0.1);
+}
+
+.weath-night .block-temp {
+    color: #eee;
+    /*text-shadow: 0 0 2px #fff;*/
+    background: rgba(0, 0, 0, 1);
+}
+
+/**************/

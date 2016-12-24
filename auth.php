@@ -15,6 +15,7 @@ if (isset($_POST['pass']) && sha1($_POST['pass']) == '1f1335fb0a6f530f9104532f65
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Auth</title>
 	<link rel="stylesheet" href="./styles/main.css">
 </head>

@@ -12,9 +12,11 @@ function mb_ucfirst($text)
 
 Abstract class WeatherA
 {
-    protected $weather;
+    const SETTINGS_PATH = 'settings.json';
 
-    protected $updateDate;
+    public function whatMode()
+    {
+    }
 
     public function get()
     {
@@ -52,7 +54,11 @@ class Weather extends WeatherA
 
     protected $unknownIcons = [];
 
-    const SETTINGS_PATH = 'settings.json';
+    public function whatMode()
+    {
+        return 'ukraine';
+    }
+
 
     public function __construct(array $cities = [])
     {
@@ -114,7 +120,7 @@ class Weather extends WeatherA
         }
         $i = 0;
         foreach ($this->cities as $keyName => $cityName) {
-            $cityData = self::getByCity($cityName, $days);
+            $cityData = static::getByCity($cityName, $days);
             ++$i;
             foreach ($cityData as $day => $data) {
                 if (!is_numeric($day)) {
@@ -179,16 +185,28 @@ class Weather extends WeatherA
             }
         }
         $weatherRepository = new WeatherRepository();
-        $weatherRepository->save($this);
+        $weatherRepository->save($this, $this->whatMode());
     }
 
-    public function convertIcon($icon, $icon_type, $desc)
+    public function convertIcon($icon, $icon_type, $desc, $night = false)
     {
         $icon_type = (string)trim($icon_type);
         $weatherIcons = json_decode(file_get_contents(self::SETTINGS_PATH), 1);
 
         foreach ($weatherIcons as $type => $icons) {
+
             if (in_array($icon_type, $icons)) {
+                if ($night) {
+                    $nightIcons = [
+                        's' => 'l',
+                        'sc' => 'lc',
+                        'c' => 'lcc',
+                        'cr' => 'lr',
+                        'rf' => 'lrf',
+                        'cn' => 'lcn',
+                    ];
+                    return $nightIcons[$type];
+                }
                 return $type;
             }
         }
@@ -277,12 +295,12 @@ class WeatherViewer
     public static function printReplacer(array $data)
     {
         ?>
-        <div class="replacer thumbnail alert-warning text-center ">
+        <div class="replacer thumbnail alert-warning text-ce`nter ">
+            <h4>Выберите отображение для этой иконки</h4>
             <div class="row">
-                <h4>Выберите отображение для этой иконки</h4>
-                <div class="col-sm-3 col-md-5 col-lg-3">
+                <div class="col-sm-3 col-md-5 col-lg-3 text-center">
                     <img src="<?= $data['icon']; ?>" alt="<?= $data['icon_type']; ?>">
-                    <p><?= $data['desc'] ?></p>
+                    <p><?= $data['desc']; ?></p>
                 </div>
                 <div class="col-sm-9 col-md-7 col-lg-9 select-image" data-icon="<?= $data['icon_type']; ?>">
                     <img class="thumbnail pull-right" src="<?= self::ICONS_PATH . 'cn.png' ?>" alt="cn">
@@ -297,7 +315,7 @@ class WeatherViewer
         <?php
     }
 
-    public static function printWeather(WeatherA $weather = null)
+    public static function printWeather($weather = null)
     {
         // IF HAVE NO CACHE
         if (!is_object($weather) || $weather->getUpdateDate() == null) {
@@ -328,6 +346,7 @@ class WeatherViewer
                 </table>
             </div>
         </div>
+
         <table class="table table-strip small-table">
             <tr>
                 <th>Город</th>
@@ -343,11 +362,9 @@ class WeatherViewer
                         <?php if ((int)$dayNum == 1) : ?>
                             <td><?= $city['name'] ?></td>
                         <?php endif; ?>
-                        <td class="text-center">
-                            <img src="<?= $city['icon']; ?>" alt="">
-                            <p><?= $city['night_t'] . '...' . $city['day_t'] ?></p>
-                            <p><?= $city['desc']; ?></p>
-                        </td>
+
+                        <?= self::cellTemplate($city, $weather->whatMode()); ?>
+
                     <?php endforeach; ?>
                 </tr>
             <?php endforeach; ?>
@@ -355,6 +372,40 @@ class WeatherViewer
         </table>
         <?php
         echo "</pre>";
+    }
+
+    public static function cellTemplate($city, $mode)
+    {
+        $printOut = '';
+        if ($mode == 'ukraine') {
+
+            $printOut .=
+                ' <td class="text-center">'
+                . '<img src="' . $city['icon'] . '" alt="weather icon">'
+                . '<p>' . $city['night_t'] . '...' . $city['day_t'] . '</p>'
+                . '<p>' . $city['desc'] . '</p>'
+                . '</td>';
+        } elseif ($mode == 'world') {
+            $printOut .=
+                '<td class="weath-cell">
+                    <div class="weath-day">
+                        <div style="overflow: hidden">
+                            <div class="block-temp">' . $city['day_t'] . '</div>
+                            <img src="' . $city['icon'] . '" alt="weather icon day">
+                        </div>                                                
+                        <p>' . $city['desc'] . ' </span>    
+                    </div>
+                    <div class="weath-night">
+                        <div style="overflow: hidden">
+                            <div class="block-temp">' . $city['night_t'] . '</div>
+                            <img src="' . $city['icon2'] . '" alt="weather icon night">
+                        </div>
+                        <p>' . $city['desc2'] . '</span>
+                    </div>
+                </td>';
+        }
+
+        return $printOut;
     }
 
 }
@@ -374,18 +425,25 @@ class WeatherRepository
     }
 
     // date('Y-m-d')
-    public static function load($date = null)
+    public static function load($mode)
     {
-        if (!isset($date)) {
-            $date = 'last';
+        if ($mode == 'ukraine') {
+            $weather = new Weather();
+        } elseif ($mode == 'world') {
+            $weather = new WeatherNight();
+        } else {
+            throw new Exception('mode is not set');
         }
-        $loadPath = '.' . DIRECTORY_SEPARATOR . self::DATA_SAVE_PATH . DIRECTORY_SEPARATOR . $date . '_tmp.ini';
+
+
+        $loadPath = '.' . DIRECTORY_SEPARATOR . self::DATA_SAVE_PATH . DIRECTORY_SEPARATOR . $mode . '_tmp.ini';
         if (!is_file($loadPath)) {
             return false;
         }
+
         $loadedCache = file_get_contents($loadPath);
         $data = unserialize($loadedCache);
-        $weather = new Weather();
+
         $weather->setUpdateDate($data['date']);
         $weather->set($data['weatherByDate']);
         $weather->setCityDay($data['weatherByCity']);
@@ -398,7 +456,7 @@ class WeatherRepository
         return $weather;
     }
 
-    public function save(WeatherA $weather, $dateBool = null)
+    public function save(WeatherA $weather, $mode = 'ukraine')
     {
         $updateDateTime = $weather->getUpdateDate();
         if (!isset($updateDateTime)) {
@@ -415,10 +473,8 @@ class WeatherRepository
         $data['cities'] = $weather->getCities();
         $dataEncoded = serialize($data);
         // TODO: FIX FOR ALL OS
-        if (!isset($dateBool)) {
-            $updateDate = 'last';
-        }
-        $savePath = self::DATA_SAVE_PATH . DIRECTORY_SEPARATOR . $updateDate . '_tmp.ini';
+
+        $savePath = self::DATA_SAVE_PATH . DIRECTORY_SEPARATOR . $mode . '_tmp.ini';
 
         // Check on rewrite data
         if (is_file($savePath)) {
@@ -437,4 +493,116 @@ class WeatherRepository
     {
         return true;
     }
+}
+
+
+class WeatherNight extends Weather
+{
+    public static function getByCity($city, $days = 3)
+    {
+        --$days;
+        $cityData['name'] = mb_strtolower($city, 'UTF-8');
+
+        for ($day = 0; $days >= $day; $day++) {
+            $date = ($day === 0) ? '' : date('Y-m-d', strtotime(date('Y-m-d') . "+$day days"));
+            $html = file_get_html('https://sinoptik.ua/погода-' . $cityData['name'] . '/' . $date);
+
+            if ($day == 0) {
+                // Get date; min, max temperature
+                $weatherFull = $html->find('div[id=blockDays]', 0)->plaintext;
+
+                //print_r($weatherFull);
+                $weatherArr = explode('&nbsp', $weatherFull);
+                unset($weatherArr[0]);
+                unset($weatherArr[8]);
+                foreach ($weatherArr as $key => $weather) {
+                    if (!is_numeric($key) || (int)$key > $days + 1) {
+                        break;
+                    }
+                    $pattern = "/\;\s+(\W+\d+\s\W+)['мин.'\s](\+\d+|\-\d+|\d+)|['макс.'\s](\+\d+|\-\d+|\d+)/U";
+
+                    $data = preg_match_all($pattern, $weather, $matches);
+                    // print_r($matches);
+
+                    $cityData[$key]['date'] = trim(rtrim($matches[1][0], '   мин.')) . date(' Y');
+                    $cityData[$key]['night_t'] = trim($matches[2][0]);
+                    $cityData[$key]['day_t'] = trim($matches[3][1]);
+                }
+            }
+
+            $cityData[$day + 1]['icon'] = $html->find('.weatherIco', $day % 6)->children(0)->getAttribute('src');
+            $cityData[$day + 1]['desc'] = ($html->find('.weatherIco', $day % 6)->getAttribute('title'));
+            $cityData[$day + 1]['icon_type'] = ltrim($html->find('.weatherIco', $day % 6)->getAttribute('class'), 'weatherIco');
+
+            $cityData[$day + 1]['icon2'] = $html->find('.p1 > div', 0)->children(0)->getAttribute('src');
+            $cityData[$day + 1]['desc2'] = $html->find('.p1 > div', 0)->getAttribute('title');
+            $cityData[$day + 1]['icon_type2'] = ltrim($html->find('.p1 > div', 0)->getAttribute('class'), 'weatherIco');
+
+        }
+        return $cityData;
+
+    }
+
+    public function get($days = 3)
+    {
+        if (isset($this->weather) && sizeof($this->weather) > 0) {
+            //echo 'from cache';
+            return $this->weather;
+        }
+        $i = 0;
+        foreach ($this->cities as $keyName => $cityName) {
+            $cityData = static::getByCity($cityName, $days);
+            ++$i;
+            foreach ($cityData as $day => $data) {
+                if (!is_numeric($day)) {
+                    continue;
+                }
+                $cityName = preg_replace('/\-\d+/', '', $cityName);
+                $cityName = mb_ucfirst($cityName);
+
+                if (!isset($data['icon_type']) || !isset($data['icon'])) {
+                    throw new Exception('Parse error, check icon');
+                }
+                // Convert icon from site to AE Project
+                $icon_char = $this->convertIcon($data['icon'], $data['icon_type'], $data['desc']);
+
+                if ($icon_char == null) {
+                    $icon_char = 'xz2';
+                }
+
+                //  --------
+                if (!isset($data['icon_type2']) || !isset($data['icon2'])) {
+                    throw new Exception('Parse error, check icon');
+                }
+                // Convert icon from site to AE Project
+                $icon_char2 = $this->convertIcon($data['icon2'], $data['icon_type2'], $data['desc2'], 1);
+
+                if ($icon_char2 == null) {
+                    $icon_char2 = 'xz2';
+                }
+
+                $this->weather[$day][$keyName] = $data;
+                $this->weather[$day][$keyName]['icon_chars'] = $icon_char;
+                $this->weather[$day][$keyName]['name'] = $cityName;
+                $this->weather[$day][$keyName]['icon_chars'] = $icon_char;
+                $this->weather[$day][$keyName]['icon_chars2'] = $icon_char2;
+
+                $this->weatherCityDay[$keyName][$day] = $data;
+                $this->weatherCityDay[$keyName][$day]['name'] = $cityName;
+                $this->weatherCityDay[$keyName][$day]['icon_chars'] = $icon_char;
+                $this->weatherCityDay[$keyName][$day]['icon_chars2'] = $icon_char2;
+                if ($i == 1) {
+                    $this->days[$day] = substr($data['date'], 0, -5);
+                }
+            }
+        }
+        $this->updateDate = date('Y-m-d H:i:s');
+        return $this->weather;
+    }
+
+    public function whatMode()
+    {
+        return 'world';
+    }
+
 }
