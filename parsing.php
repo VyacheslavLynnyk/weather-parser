@@ -519,10 +519,9 @@ class WeatherNight extends Weather
                     if (!is_numeric($key) || (int)$key > $days + 1) {
                         break;
                     }
-                    $pattern = "/\;\s+(\W+\d+\s\W+)['мин.'\s](\+\d+|\-\d+|\d+)|['макс.'\s](\+\d+|\-\d+|\d+)/U";
+                    $pattern = "/\;\s+(\W+\d++\s\W+)['мин.'\s](\+\d++|\-\d++|\d++)|['макс.'\s](\+\d++|\-\d++|\d++)/U";
 
-                    $data = preg_match_all($pattern, $weather, $matches);
-                    // print_r($matches);
+                    preg_match_all($pattern, $weather, $matches);
 
                     $cityData[$key]['date'] = trim(rtrim($matches[1][0], '   мин.')) . date(' Y');
                     $cityData[$key]['night_t'] = trim($matches[2][0]);
