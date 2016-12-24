@@ -382,7 +382,7 @@ class WeatherViewer
             $printOut .=
                 ' <td class="text-center">'
                 . '<img src="' . $city['icon'] . '" alt="weather icon">'
-                . '<p>' . $city['night_t'] . '...' . $city['day_t'] . '</p>'
+                . '<p>' . $city['night_t'] . '°...' . $city['day_t'] . '°</p>'
                 . '<p>' . $city['desc'] . '</p>'
                 . '</td>';
         } elseif ($mode == 'world') {
@@ -390,14 +390,14 @@ class WeatherViewer
                 '<td class="weath-cell">
                     <div class="weath-day">
                         <div style="overflow: hidden">
-                            <div class="block-temp">' . $city['day_t'] . '</div>
+                            <div class="block-temp">' . $city['day_t'] . '°</div>
                             <img src="' . $city['icon'] . '" alt="weather icon day">
                         </div>                                                
                         <p>' . $city['desc'] . ' </span>    
                     </div>
                     <div class="weath-night">
                         <div style="overflow: hidden">
-                            <div class="block-temp">' . $city['night_t'] . '</div>
+                            <div class="block-temp">' . $city['night_t'] . '°</div>
                             <img src="' . $city['icon2'] . '" alt="weather icon night">
                         </div>
                         <p>' . $city['desc2'] . '</span>
