@@ -246,8 +246,8 @@ class Weather extends WeatherA
     public static function getByCity($city, $days = 3)
     {
         $cityData['name'] = mb_strtolower($city, 'UTF-8');
-
-        $html = file_get_html('https://sinoptik.ua/погода-' . $cityData['name']);
+        $htmlAppend = ($days > 7) ? '/10-дней' : '';
+        $html = file_get_html('https://sinoptik.ua/погода-' . $cityData['name'] . $htmlAppend);
 
         // print_r($html);
         // Get date; min, max temperature
@@ -256,12 +256,12 @@ class Weather extends WeatherA
         //print_r($weatherFull);
         $weatherArr = explode('&nbsp', $weatherFull);
         unset($weatherArr[0]);
-        unset($weatherArr[8]);
+        array_pop($weatherArr);
         foreach ($weatherArr as $key => $weather) {
             if (!is_numeric($key) || (int)$key > $days) {
                 break;
             }
-            $pattern = "/\;\s+(\W+\d+\s\W+)['мин.'\s](\+\d+|\-\d+|\d+)|['макс.'\s](\+\d+|\-\d+|\d+)/U";
+            $pattern = "/\;\s+(\W+\d++\s\W+)['мин.'\s](\+\d++|\-\d++|\d++)|['макс.'\s](\+\d++|\-\d++|\d++)/U";
 
             $data = preg_match_all($pattern, $weather, $matches);
             // print_r($matches);
@@ -334,13 +334,19 @@ class WeatherViewer
 
         ?>
         <div id="header-top">
-            <div class="container">
+            <div class="container-fluid">
                 <table class="table table-strip small-table">
                     <tr>
                         <th>Город</th>
                         <?php $days = $weather->getDays(); ?>
                         <?php foreach ($days as $num => $day) : ?>
-                            <th><?= $day ?></th>
+                            <?php
+                            $pos = strpos($day, ' ');
+                            if ($pos !== false) {
+                                $day = substr_replace($day, '<br>', $pos, strlen(' '));
+                            }
+                            ?>
+                            <th><?= $day; ?></th>
                         <?php endforeach; ?>
                     </tr>
                 </table>
@@ -351,6 +357,12 @@ class WeatherViewer
             <tr>
                 <th>Город</th>
                 <?php foreach ($days as $num => $day) : ?>
+                    <?php
+                    $pos = strpos($day, ' ');
+                    if ($pos !== false) {
+                        $day = substr_replace($day, '<br>', $pos, strlen(' '));
+                    }
+                    ?>
                     <th><?= $day ?></th>
                 <?php endforeach; ?>
             </tr>
@@ -504,7 +516,7 @@ class WeatherNight extends Weather
         $cityData['name'] = mb_strtolower($city, 'UTF-8');
 
         for ($day = 0; $days >= $day; $day++) {
-            $date = ($day === 0) ? '' : date('Y-m-d', strtotime(date('Y-m-d') . "+$day days"));
+            $date = ($day === 0) ? '10-дней' : date('Y-m-d', strtotime(date('Y-m-d') . "+$day days"));
             $html = file_get_html('https://sinoptik.ua/погода-' . $cityData['name'] . '/' . $date);
 
             if ($day == 0) {
@@ -514,7 +526,7 @@ class WeatherNight extends Weather
                 //print_r($weatherFull);
                 $weatherArr = explode('&nbsp', $weatherFull);
                 unset($weatherArr[0]);
-                unset($weatherArr[8]);
+                array_pop($weatherArr);
                 foreach ($weatherArr as $key => $weather) {
                     if (!is_numeric($key) || (int)$key > $days + 1) {
                         break;

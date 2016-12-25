@@ -59,13 +59,9 @@ if (!isset($_COOKIE["password"]) or sha1($_COOKIE["password"]) !== '453407e93d72
             <div class="nav navbar-nav margin-left5px padding-top15">
                 <label class="pull-left" for="weather-days">Дней:</label>
                 <select class="nav form-control pull-left" name="days" id="weather-days">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
+                    <?php for ($i = 1; $i <= 10; $i++ ) : ?>
+                        <option value="<?= $i ?>"><?= $i ?></option>
+                    <?php endfor ?>
                 </select>
 
             </div>
@@ -88,7 +84,7 @@ if (!isset($_COOKIE["password"]) or sha1($_COOKIE["password"]) !== '453407e93d72
     </div>
 </nav>
 
-<div class="container">
+<div class="container-fluid">
     <div class="loading" style="display: none;">
         <img src="imgs/loading.gif" alt="загрузка">
     </div>

@@ -108,7 +108,7 @@ $('body').on('click', '.replacer .select-image > img', function (e) {
     loadWeather();
 
     // Get last number of days on load
-    updateOptions();
+    setTimeout(updateOptions, 500);
 
     // SHOW/HIDE TABLE HEAD ON SCROLL UP/DOWN
     var showHead = 0;
@@ -117,7 +117,9 @@ $('body').on('click', '.replacer .select-image > img', function (e) {
         var minWidth = 320;
         var pageWidth = $(window).width();
 
-        if (days.val() >= 7 ) {
+        if (days.val() >= 8 ) {
+            minWidth = 1279;
+        } else if (days.val() >= 7 ) {
             minWidth = 950;
         } else if (days.val() == 6 ) {
             minWidth = 820;

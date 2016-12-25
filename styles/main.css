@@ -10,7 +10,7 @@
 
 .table.small-table td,
 .table.small-table th {
-    width: calc(12.462%);
+    width: calc(8%);
 }
 
 .table.small-table td p {
@@ -119,7 +119,7 @@ table {
     margin-right: 15px;
     height: 24px;
     padding: 1px;
-    width: 40px;
+    width: 50px;
 }
 
 .update-time {
