@@ -22,6 +22,7 @@ $weather = WeatherRepository::load($mode);
 
 $weather->get();
 $days_cities = $weather->get();
+$updateDate = $weather->getUpdateDate();
 
 if ($weather->getUpdateDate() == null) {
     echo 'Нужно обновить данные';
@@ -38,10 +39,10 @@ if ($mode == 'ukraine') {
     require_once __DIR__ . '/etc.world.php';
 }
 
-function genPathByDay($n, $mode)
+function genPathByDay($n, $mode, $date)
 {
     --$n;
-    $newDate = date('Y-m-d', strtotime(date('Y-m-d') . "+" . $n . " days"));
+    $newDate = date('Y-m-d', strtotime($date . "+" . $n . " days"));
     $jsFile = '.' . DIRECTORY_SEPARATOR . 'js_files' . DIRECTORY_SEPARATOR . 'Weath_' . $mode . '_' . $newDate . '.jsx';
     return $jsFile;
 }
@@ -57,10 +58,10 @@ $zip->open($file, ZipArchive::OVERWRITE);
 
 // Put files with AE scripts into archive
 foreach ($days_cities as $day => $cities) {
-    $js_path = genPathByDay($day, $mode);
+    $js_path = genPathByDay($day, $mode, $updateDate);
     $links[$day] = $js_path;
     // $zip->addFromString('file_name_within_archive.ext', $your_string_data);
-    file_put_contents($js_path, genJS($cities));
+    file_put_contents($js_path, genJS($cities, $updateDate));
     $zip->addFile(
         $js_path,
         str_replace('.' . DIRECTORY_SEPARATOR . 'js_files' . DIRECTORY_SEPARATOR, '', $js_path)
@@ -69,10 +70,12 @@ foreach ($days_cities as $day => $cities) {
 }
 $zip->close();
 
+$days =sizeof($weather->getDays());
+
 // Download archive
 header('Content-Type: application/zip');
 header('Content-Length: ' . filesize($file));
-header('Content-Disposition: attachment; filename="Weather_' . date('Y-m-d') . '_jsx.zip"');
+header('Content-Disposition: attachment; filename="Weather_' . $mode .'_' . date('Y-m-d', strtotime($updateDate)) . '_'.$days . 'days_jsx.zip"');
 readfile($file);
 unlink($file);
 

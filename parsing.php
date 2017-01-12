@@ -21,6 +21,7 @@ Abstract class WeatherA
     public function get()
     {
     }
+    public function getDays() {}
 
     public function getCityDay($days)
     {
@@ -295,7 +296,7 @@ class WeatherViewer
     public static function printReplacer(array $data)
     {
         ?>
-        <div class="replacer thumbnail alert-warning text-ce`nter ">
+        <div class="replacer thumbnail alert-warning text-center ">
             <h4>Выберите отображение для этой иконки</h4>
             <div class="row">
                 <div class="col-sm-3 col-md-5 col-lg-3 text-center">

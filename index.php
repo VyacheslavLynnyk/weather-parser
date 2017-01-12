@@ -78,7 +78,9 @@ if (!isset($_COOKIE["password"]) or sha1($_COOKIE["password"]) !== '453407e93d72
             <ul class="nav navbar-nav navbar-right">
 
                 <!-- <li><a href="#" id="download-txt">Скачать TXT<span class="sr-only">(current)</span></a></li> -->
-                <li><a href="./save-js.php" id="download-js">Скачать JS</a></li>
+                <li class="download-script">
+                    <a href="./save-js.php" class="btn-download" id="download-js">Скачать jsx</a>
+                </li>
             </ul>
         </div><!--/.nav-collapse -->
     </div>

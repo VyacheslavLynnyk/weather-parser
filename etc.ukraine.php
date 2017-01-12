@@ -1,10 +1,9 @@
 <?php
 // Generate AfterEffect script file
-function genJS($cities)
+function genJS($cities, $dateUpdate)
 {
-    $currentData = date('Y-m-d H:i');
     $script = <<<"INFO"
-// ---- INFO ----- DATE-UPDATE: {$currentData};
+// ---- INFO ----- DATE-UPDATE: {$dateUpdate};
 var oblasti = {
     centr : {
         vinnitsa :  {name : 'Вінниця', nt : '{$cities['vinnitsa']['night_t']}', dt : '{$cities['vinnitsa']['day_t']}', sep : '...' , icon : '{$cities['vinnitsa']['icon_chars']}'},

@@ -71,6 +71,13 @@ $('#weather-update').on('click', function (e) {
 });
 
 
+$('#download-js').on('click', function(e){
+    if ($('.replacer').length != 0) {
+        e.preventDefault();
+        alert("Сперва нужно выбрать все неопознанные значки, а потом уже скачивать скрипт." +
+            "\n(Без них у дизайнера будет нераспознанная погода)");
+    }
+});
 // Icon FIXER
 $('body').on('click', '.replacer .select-image > img', function (e) {
     e.preventDefault();

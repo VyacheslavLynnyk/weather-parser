@@ -1,10 +1,9 @@
 <?php
 // Generate AfterEffect script file
-function genJS($cities)
+function genJS($cities, $dateUpdate)
 {
-    $currentData = date('Y-m-d H:i');
     $script = <<<"INFO"
-// ---- INFO ----- DATE-UPDATE: {$currentData};
+// ---- INFO ----- DATE-UPDATE: {$dateUpdate};
 
 // settings
 var cities = {
@@ -40,7 +39,7 @@ var cities = {
 	
 	'dubay' :	{icoName: 'dubay', name : 'дубаї', cont : 'africa' , day_t : '{$cities['dubay']['day_t']}', night_t : '{$cities['dubay']['night_t']}', day_w : '{$cities['dubay']['icon_chars']}', night_w : '{$cities['dubay']['icon_chars2']}'},
 	
-	'kair' :	{icoName: 'kair', name : 'каір', cont : 'africa' , day_t : '{$cities['kair']['day_t']}', night_t : '{$cities['kair']['night_t']}', day_w : '{$cities['kair']['icon_chars']}', night_w : '{$cities['kair']['icon_chars2']}'},
+	'kair' :	{icoName: 'kair', name : 'каїр', cont : 'africa' , day_t : '{$cities['kair']['day_t']}', night_t : '{$cities['kair']['night_t']}', day_w : '{$cities['kair']['icon_chars']}', night_w : '{$cities['kair']['icon_chars2']}'},
 	
 	'er_riyad' :	{icoName: 'er_riyad', name : 'ер-ріяд', cont : 'africa' , day_t : '{$cities['er_riyad']['day_t']}', night_t : '{$cities['er_riyad']['night_t']}', day_w : '{$cities['er_riyad']['icon_chars']}', night_w : '{$cities['er_riyad']['icon_chars2']}'},
 	
@@ -95,7 +94,7 @@ function setCityTemperature( city, contTemp ){
 		alert ('Не обнаружен город: ' + city.name);
 	}
     var city_temperature_text = app.project.item(numItem).layer(temperature_layer).text.sourceText;		
-	var temperature = city['day_t'] + '    ' + city['night_t'];
+	var temperature = city['night_t'] + '    ' + city['day_t'];
 	// var temperature = '+0' + city.sep + '+0';
 	city_temperature_text.setValue(temperature);
     $.writeln(city.name + ' : ' + temperature);    
