@@ -1,10 +1,12 @@
 <?php
-$weather = 'Воскресенье 25 декабря   мин. 0°  макс. -19°    Array';
-$pattern = "/\;\s+(\W+\d++\s\W+)['мин.'\s](\+\d++|\-\d++|\d++)|['макс.'\s](\+\d++|\-\d++|\d++)/U";
-//$pattern = "/\+\d++/U";
-
-$data = preg_match_all($pattern, $weather, $matches);
+require_once 'parsing.php';
+$weather = WeatherRepository::load('world');
+$weather->get();
+$days_cities = $weather->get();
+$updateDate = $weather->getUpdateDate();
+$weather->fixIcons();
+$unknowIcons = $weather->getUnknownIcons();
 echo "<pre>";
+print_r($unknowIcons);
 print_r($weather);
-print_r($matches);
 echo "</pre>";

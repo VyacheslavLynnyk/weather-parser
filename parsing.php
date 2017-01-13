@@ -21,7 +21,10 @@ Abstract class WeatherA
     public function get()
     {
     }
-    public function getDays() {}
+
+    public function getDays()
+    {
+    }
 
     public function getCityDay($days)
     {
@@ -168,21 +171,37 @@ class Weather extends WeatherA
                 if (!is_numeric($day)) {
                     continue;
                 }
-
                 if ($this->weather[$day][$keyName]['icon_chars'] == 'xz'
                     || $this->weather[$day][$keyName]['icon_chars'] == 'xz2'
+
                 ) {
                     $newIconChar = $this->convertIcon(
                         $this->weather[$day][$keyName]['icon'],
                         $this->weather[$day][$keyName]['icon_type'],
                         $this->weather[$day][$keyName]['desc']
                     );
-
                     if ($newIconChar != 'xz') {
                         $this->weather[$day][$keyName]['icon_chars'] = $newIconChar;
                         $this->weatherCityDay[$keyName][$day]['icon_chars'] = $newIconChar;
                     }
                 }
+
+                if ((isset($this->weather[$day][$keyName]['icon_chars2'])
+                    && $this->weather[$day][$keyName]['icon_chars2'] == 'xz')
+                || (isset($this->weather[$day][$keyName]['icon_chars2'])
+                    && $this->weather[$day][$keyName]['icon_chars2'] == 'xz2')
+                ) {
+                    $newIconChar = $this->convertIcon(
+                        $this->weather[$day][$keyName]['icon2'],
+                        $this->weather[$day][$keyName]['icon_type2'],
+                        $this->weather[$day][$keyName]['desc2']
+                    );
+                    if ($newIconChar != 'xz') {
+                        $this->weather[$day][$keyName]['icon_chars2'] = $newIconChar;
+                        $this->weatherCityDay[$keyName][$day]['icon_chars2'] = $newIconChar;
+                    }
+                }
+
             }
         }
         $weatherRepository = new WeatherRepository();
@@ -434,7 +453,6 @@ class WeatherRepository
                 throw new Exception("Can't create " . self::DATA_SAVE_PATH . " folder", 1);
             }
         }
-
     }
 
     // date('Y-m-d')
