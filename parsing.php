@@ -194,7 +194,8 @@ class Weather extends WeatherA
                     $newIconChar = $this->convertIcon(
                         $this->weather[$day][$keyName]['icon2'],
                         $this->weather[$day][$keyName]['icon_type2'],
-                        $this->weather[$day][$keyName]['desc2']
+                        $this->weather[$day][$keyName]['desc2'],
+                        true
                     );
                     if ($newIconChar != 'xz') {
                         $this->weather[$day][$keyName]['icon_chars2'] = $newIconChar;

@@ -63,6 +63,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'update') {
 // Load from cache
 if (isset($_GET['action']) && $_GET['action'] == 'load') {
 	$weather = WeatherRepository::load('ukraine');
+	$weather->fixIcons();
 	WeatherViewer::printWeather($weather);
 }
 
