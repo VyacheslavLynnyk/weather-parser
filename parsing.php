@@ -3,6 +3,8 @@
 require __DIR__ . '/simplehtmldom_1_5/simple_html_dom.php';
 
 date_default_timezone_set('Europe/Kiev');
+ini_set('memory_limit', '2048M');
+ini_set('max_execution_time', 600);
 
 mb_internal_encoding("UTF-8");
 function mb_ucfirst($text)
@@ -532,6 +534,7 @@ class WeatherNight extends Weather
 {
     public static function getByCity($city, $days = 3)
     {
+
         --$days;
         $cityData['name'] = mb_strtolower($city, 'UTF-8');
 
@@ -546,7 +549,9 @@ class WeatherNight extends Weather
                 //print_r($weatherFull);
                 $weatherArr = explode('&nbsp', $weatherFull);
                 unset($weatherArr[0]);
+                unset($weatherFull);
                 array_pop($weatherArr);
+                if (sizeof($weatherArr) < 1) throw new Exception('Не найден город '. $cityData['name'] . ', для исправления нужно обратиться к разработчику :).');
                 foreach ($weatherArr as $key => $weather) {
                     if (!is_numeric($key) || (int)$key > $days + 1) {
                         break;
@@ -568,6 +573,7 @@ class WeatherNight extends Weather
             $cityData[$day + 1]['icon2'] = $html->find('.p1 > div', 0)->children(0)->getAttribute('src');
             $cityData[$day + 1]['desc2'] = $html->find('.p1 > div', 0)->getAttribute('title');
             $cityData[$day + 1]['icon_type2'] = ltrim($html->find('.p1 > div', 0)->getAttribute('class'), 'weatherIco');
+            unset($html);
 
         }
         return $cityData;

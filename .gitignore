@@ -6,5 +6,6 @@ js_tmp/*
 parse_tmp/*
 trash/
 test.php
+settings.json
 
 

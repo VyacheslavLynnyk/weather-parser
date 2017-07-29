@@ -21,12 +21,12 @@ if (isset($_POST['action']) && $_POST['action'] == 'update') {
 		'new_york' => 'нью-йорк',
 		'washgton' => 'вашингтон',
 		'mexico' => 'мехико',
-		'toronto' => 'торонто',
+		'toronto' => 'торонто-106167865',
 
 		'deli' => 'дели',
 		'tokio' => 'токио',
 		'pekin' => 'пекин',
-		'seul' => 'сеул',
+		'seul' => 'сеул-101835848',
 
 		'dubay' => 'дубай',
 		'kair' => 'каир',
@@ -35,7 +35,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'update') {
 	];
 
 	$weather = new WeatherNight($cities);
-	$weather->get($days); 
+	$weather->get($days);
+
 
 	// Save weather to cache
     $weatherRepository = new WeatherRepository();
