@@ -1,9 +1,25 @@
 <?php session_start();
 
 if (!isset($_COOKIE["password"]) or sha1($_COOKIE["password"]) !== '453407e93d72014d648ec95503217423ca7d13b0') {
-    header('LOCATION: /auth.php');
-    exit;
+	header('LOCATION: /auth.php');
+	exit;
 }
+if (isset($_GET['do']) && strtolower($_GET['do']) == 'on') {
+	if (is_file('lock_1.cfg')) {
+		rename('lock_1.cfg', 'lock_0.cfg');
+	} else {
+	    touch('lock_0.cfg');
+    }
+    die('weather is turned "ON". Go to <a href="/">Weather site</a>');
+} elseif (isset($_GET['do']) && strtolower($_GET['do']) == 'off') {
+	if (is_file('lock_0.cfg')) {
+		rename('lock_0.cfg', 'lock_1.cfg');
+	} else {
+		touch('lock_1.cfg');
+	}
+	die('weather is turned "OFF". Go to <a href="/">Weather site</a>');
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -50,8 +66,8 @@ if (!isset($_COOKIE["password"]) or sha1($_COOKIE["password"]) !== '453407e93d72
                 <select class="nav form-control pull-left" name="in" id="weather-place"
                         style="width: 100px; height: 24px; padding: 0 2px;
                             margin-left: 5px; margin-right: 15px; margin-top: 15px">
-                    <option value="ukraine" <?= (isset($_COOKIE['load_in']) && $_COOKIE['load_in'] =='ukraine') ? ' selected' : ''?>>Украина</option>
-                    <option value="world" <?= (isset($_COOKIE['load_in']) && $_COOKIE['load_in'] =='world') ? ' selected' : ''?>>Мир</option>
+                    <option value="ukraine" <?= (isset($_COOKIE['load_in']) && $_COOKIE['load_in'] == 'ukraine') ? ' selected' : '' ?>>Украина</option>
+                    <option value="world" <?= (isset($_COOKIE['load_in']) && $_COOKIE['load_in'] == 'world') ? ' selected' : '' ?>>Мир</option>
                 </select>
             </span>
         </div>
@@ -59,9 +75,9 @@ if (!isset($_COOKIE["password"]) or sha1($_COOKIE["password"]) !== '453407e93d72
             <div class="nav navbar-nav margin-left5px padding-top15">
                 <label class="pull-left" for="weather-days">Дней:</label>
                 <select class="nav form-control pull-left" name="days" id="weather-days">
-                    <?php for ($i = 1; $i <= 10; $i++ ) : ?>
+					<?php for ($i = 1; $i <= 10; $i++) : ?>
                         <option value="<?= $i ?>"><?= $i ?></option>
-                    <?php endfor ?>
+					<?php endfor ?>
                 </select>
 
             </div>
